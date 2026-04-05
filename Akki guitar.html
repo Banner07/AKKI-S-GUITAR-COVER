@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKKI (GUITARIST) | Guitar Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --neon-green: #00ff9d;
+            --dark-bg: #050508;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            overflow-x: hidden;
+        }
+        
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Animated Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            opacity: 0;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: var(--opacity); transform: scale(1); }
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-strong {
+            background: rgba(20, 20, 30, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+        }
+        
+        /* Neon Glow Effects */
+        .glow-text {
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+        }
+        
+        .glow-border {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+        
+        /* Audio Wave Animation */
+        .wave-bar {
+            width: 3px;
+            background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { height: 10px; }
+            50% { height: 30px; }
+        }
+        
+        .playing .wave-bar {
+            animation-duration: 0.5s;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 4px;
+        }
+        
+        /* Upload Zone Animation */
+        .upload-zone {
+            background: linear-gradient(135deg, rgba(0,243,255,0.1) 0%, rgba(157,0,255,0.1) 100%);
+            border: 2px dashed rgba(0,243,255,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0,243,255,0.2);
+            transform: scale(1.02);
+        }
+        
+        /* Track Card Hover */
+        .track-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .track-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,243,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .track-card:hover::before {
+            left: 100%;
+        }
+        
+        .track-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,243,255,0.2);
+            border-color: var(--neon-cyan);
+        }
+        
+        .track-card.active {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0,243,255,0.3), inset 0 0 20px rgba(0,243,255,0.1);
+        }
+        
+        /* Prevent Download Overlay */
+        .protected-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: default;
+            pointer-events: auto;
+        }
+        
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--neon-pink);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--neon-cyan);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim {
+            0% { clip: rect(12px, 9999px, 52px, 0); }
+            20% { clip: rect(65px, 9999px, 11px, 0); }
+            40% { clip: rect(26px, 9999px, 89px, 0); }
+            60% { clip: rect(78px, 9999px, 14px, 0); }
+            80% { clip: rect(33px, 9999px, 66px, 0); }
+            100% { clip: rect(55px, 9999px, 99px, 0); }
+        }
+        
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 99px, 0); }
+            20% { clip: rect(12px, 9999px, 52px, 0); }
+            40% { clip: rect(78px, 9999px, 14px, 0); }
+            60% { clip: rect(26px, 9999px, 89px, 0); }
+            80% { clip: rect(33px, 9999px, 66px, 0); }
+            100% { clip: rect(55px, 9999px, 11px, 0); }
+        }
+        
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            margin-top: -6px;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+        }
+        
+        /* Share Modal */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .share-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Opus Badge Animation */
+        .opus-badge {
+            background: linear-gradient(135deg, rgba(0,255,157,0.2) 0%, rgba(0,243,255,0.2) 100%);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            animation: pulse-green 2s infinite;
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 5px rgba(0,255,157,0.3); }
+            50% { box-shadow: 0 0 20px rgba(0,255,157,0.6); }
+        }
+        
+        /* Inline Player Styles */
+        .inline-player {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            border: 1px solid rgba(0,243,255,0.2);
+        }
+        
+        .progress-container {
+            position: relative;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-cyan);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .progress-container:hover .progress-handle {
+            opacity: 1;
+        }
+        
+        .time-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+            min-width: 40px;
+        }
+        
+        /* Visualizer Canvas */
+        .visualizer-canvas {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        /* Play Button Pulse */
+        .play-btn-pulse {
+            animation: playPulse 2s infinite;
+        }
+        
+        @keyframes playPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,243,255,0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(0,243,255,0); }
+        }
+        
+        /* Loading Animation */
+        .upload-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,243,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--neon-cyan);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Admin Lock */
+        .admin-lock {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+        
+        .admin-lock.hidden {
+            display: none;
+        }
+        
+        .lock-content {
+            text-align: center;
+            padding: 40px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            background: rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(0,243,255,0.3);
+        }
+        
+        .password-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--neon-cyan);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 4px;
+            width: 200px;
+            margin: 20px 0;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0,243,255,0.5);
+        }
+        
+        /* Storage Warning */
+        .storage-warning {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
+            color: #ff6666;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen">
+
+    <!-- Admin Lock Screen -->
+    <div id="adminLock" class="admin-lock">
+        <div class="lock-content">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center glow-border">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+            </div>
+            <h2 class="font-orbitron text-3xl font-bold mb-2 text-white">ADMIN ACCESS</h2>
+            <p class="text-gray-400 mb-6">Enter passcode to manage uploads</p>
+            <input type="password" id="adminPassword" class="password-input" placeholder="••••••" maxlength="6">
+            <br>
+            <button onclick="checkAdmin()" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full font-bold hover:scale-105 transition-transform glow-border">
+                UNLOCK
+            </button>
+            <p id="lockError" class="text-red-400 mt-4 text-sm hidden">Invalid passcode</p>
+            <p class="text-gray-600 mt-6 text-xs">Visitors can stream without password</p>
+        </div>
+    </div>
+
+    <!-- Animated Star Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-strong border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center glow-border">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                    </svg>
+                </div>
+                <h1 class="font-orbitron text-2xl font-bold tracking-wider glitch" data-text="AKKI'S GUITAR COVERS">AKKI'S GUITAR COVERS</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="adminBtn" onclick="lockAdmin()" class="hidden px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/30 transition-colors">
+                    LOCK ADMIN
+                </button>
+                <button onclick="openShareModal()" class="group relative px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full font-bold tracking-wider overflow-hidden transition-all hover:scale-105 glow-border">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                        SHARE 
+                    </span>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm tracking-widest font-bold">
+                AUDIO ARCHIVE v2.0
+            </div>
+            <h2 class="font-orbitron text-5xl md:text-7xl font-black mb-6 leading-tight">
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                    SONIC
+                </span>
+                <span class="block text-white glow-text">SIGNATURES</span>
+            </h2>
+            <p class="text-gray-400 text-xl max-w-2xl mx-auto mb-12 font-light">
+                Upload unlimited guitar recordings to the neural network. Stream instantly with studio-quality OPUS support.
+            </p>
+            
+            <!-- Stats -->
+            <div class="flex justify-center gap-8 md:gap-16 text-center flex-wrap">
+                <div class="glass px-6 py-3 rounded-2xl">
+                    <div class="text-3xl font-orbitron font-bold text-cyan-400" id="trackCount">0</div>
+                    <div class="text-xs text-gray-500 tracking-widest">TRACKS</div>
+                </div>
+                <div class="glass px-6 py-3 rounded-2xl">
+                    <div class="text-3xl font-orbitron font-bold text-purple-400" id="totalDuration">00:00</div>
+                    <div class="text-xs text-gray-500 tracking-widest">MINUTES</div>
+                </div>
+                <div class="glass px-6 py-3 rounded-2xl">
+                    <div class="text-3xl font-orbitron font-bold text-pink-400" id="playCount">0</div>
+                    <div class="text-xs text-gray-500 tracking-widest">PLAYS</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section - Admin Only -->
+    <section id="uploadSection" class="px-6 mb-16 hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <span class="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-wider">ADMIN MODE</span>
+            </div>
+            
+            <!-- Storage Warning -->
+            <div id="storageWarning" class="storage-warning hidden">
+                <strong>Storage Full!</strong> Browser limit reached (~5-10MB). Delete some tracks or export to free space.
+            </div>
+            
+            <div id="uploadZone" class="upload-zone rounded-3xl p-12 text-center cursor-pointer relative overflow-hidden group">
+                <input type="file" id="fileInput" accept="audio/*,.opus,audio/opus,audio/ogg;codecs=opus" multiple class="hidden">
+                
+                <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-purple-500/10 to-cyan-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                
+                <div class="relative z-10">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-cyan-400/20 to-purple-600/20 flex items-center justify-center border border-cyan-500/30 group-hover:scale-110 transition-transform">
+                        <svg class="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-orbitron text-2xl font-bold mb-2 text-white">ADMIN UPLOAD</h3>
+                    <p class="text-gray-400 mb-4">Drop individual audio files here or click to browse</p>
+                    <div class="flex justify-center gap-2 text-xs flex-wrap max-w-lg mx-auto mb-3">
+                        <span class="px-2 py-1 rounded border border-cyan-500/20 text-cyan-400/60">MP3</span>
+                        <span class="px-2 py-1 rounded border border-cyan-500/20 text-cyan-400/60">WAV</span>
+                        <span class="px-2 py-1 rounded border border-cyan-500/20 text-cyan-400/60">FLAC</span>
+                        <span class="px-2 py-1 rounded border border-cyan-500/20 text-cyan-400/60">M4A</span>
+                        <span class="px-2 py-1 rounded border border-green-500/40 text-green-400 opus-badge font-bold">OPUS</span>
+                        <span class="px-2 py-1 rounded border border-cyan-500/20 text-cyan-400/60">OGG</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Individual files only • No folders
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Controls -->
+            <div class="mt-4 flex justify-center gap-3">
+                <button onclick="document.getElementById('fileInput').click()" class="px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm hover:bg-cyan-500/30 transition-colors">
+                    Select Files
+                </button>
+                <button onclick="exportTracks()" class="px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 text-sm hover:bg-purple-500/30 transition-colors">
+                    Export Data
+                </button>
+                <button onclick="clearAllTracks()" class="px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/30 transition-colors">
+                    Clear All
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visitor Notice - Shows when not admin -->
+    <section id="visitorNotice" class="px-6 mb-16">
+        <div class="max-w-2xl mx-auto text-center glass rounded-2xl p-8 border border-white/10">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-600/20 flex items-center justify-center">
+                <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                </svg>
+            </div>
+            <h3 class="font-orbitron text-xl font-bold text-white mb-2">STREAMING MODE</h3>
+            <p class="text-gray-400 text-sm">You can listen to all tracks, but only the admin can upload new recordings.</p>
+        </div>
+    </section>
+
+    <!-- Tracks Grid -->
+    <section class="px-6 pb-32">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+                <h3 class="font-orbitron text-2xl font-bold text-white flex items-center gap-3">
+                    <span class="w-2 h-8 bg-gradient-to-b from-cyan-400 to-purple-600 rounded-full"></span>
+                    ARCHIVE COLLECTION
+                    <span id="collectionCount" class="text-sm text-gray-500 font-normal">(0 tracks)</span>
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="setView('grid')" id="gridBtn" class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                    </button>
+                    <button onclick="setView('list')" id="listBtn" class="p-2 rounded-lg bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tracksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Empty State -->
+                <div id="emptyState" class="col-span-full text-center py-20">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center border border-gray-700">
+                        <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 text-lg">No transmissions detected</p>
+                    <p class="text-gray-600 text-sm mt-2">Admin access required to upload recordings</p>
+                </div>
+            </div>
+            
+            <!-- Load More Indicator -->
+            <div id="loadMoreIndicator" class="hidden text-center py-8">
+                <div class="inline-flex items-center gap-2 text-cyan-400">
+                    <div class="upload-loading"></div>
+                    <span class="text-sm">Processing uploads...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal" onclick="closeShareModal(event)">
+        <div class="glass-strong rounded-3xl p-8 max-w-md w-full mx-4 border border-cyan-500/30 glow-border relative" onclick="event.stopPropagation()">
+            <button onclick="closeShareModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center glow-border">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-orbitron text-2xl font-bold text-white mb-2">SHARE PORTAL</h3>
+                <p class="text-gray-400 text-sm">Share your collection</p>
+            </div>
+            
+            <div class="relative mb-6">
+                <input type="text" id="shareLink" readonly class="w-full bg-black/50 border border-cyan-500/30 rounded-xl px-4 py-3 text-cyan-400 font-mono text-sm focus:outline-none focus:border-cyan-500">
+                <button onclick="copyLink()" class="absolute right-2 top-2 px-4 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-cyan-400 text-sm hover:bg-cyan-500/30 transition-colors">
+                    COPY
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="shareTo('twitter')" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-500/30 transition-all group">
+                    <svg class="w-6 h-6 mx-auto text-gray-400 group-hover:text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                </button>
+                <button onclick="shareTo('instagram')" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-pink-500/30 transition-all group">
+                    <svg class="w-6 h-6 mx-auto text-gray-400 group-hover:text-pink-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12.017 0C8.396 0 8.016.013 6.789.066c-1.281.06-2.092.272-2.878.583a5.84 5.84 0 00-2.135 1.388 5.84 5.84 0 00-1.388 2.135c-.311.786-.523 1.597-.583 2.878C.013 8.016 0 8.396 0 12.017c0 3.621.013 4.001.066 5.228.06 1.281.272 2.092.583 2.878a5.84 5.84 0 001.388 2.135 5.84 5.84 0 002.135 1.388c.786.311 1.597.523 2.878.583 1.227.053 1.607.066 5.228.066 3.621 0 4.001-.013 5.228-.066 1.281-.06 2.092-.272 2.878-.583a5.84 5.84 0 002.135-1.388 5.84 5.84 0 001.388-2.135c.311-.786.523-1.597.583-2.878.053-1.227.066-1.607.066-5.228 0-3.621-.013-4.001-.066-5.228-.06-1.281-.272-2.092-.583-2.878a5.84 5.84 0 00-1.388-2.135A5.84 5.84 0 0018.132.649c-.786-.311-1.597-.523-2.878-.583C13.949.013 13.569 0 12.017 0zM12 5.4a6.6 6.6 0 100 13.2 6.6 6.6 0 000-13.2zm0 10.8a4.2 4.2 0 110-8.4 4.2 4.2 0 010 8.4zm6.6-10.8a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>
+                    </svg>
+                </button>
+                <button onclick="shareTo('copy')" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all group">
+                    <svg class="w-6 h-6 mx-auto text-gray-400 group-hover:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin Configuration
+        const ADMIN_PASSWORD = '2026';
+        
+        // Star Background Generation
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.setProperty('--opacity', Math.random() * 0.8 + 0.2);
+                starsContainer.appendChild(star);
+            }
+        }
+        createStars();
+
+        // Audio State Management
+        let tracks = [];
+        let currentTrack = null;
+        let currentTrackId = null;
+        let audioPlayers = {};
+        let playingStates = {};
+        let audioContext = null;
+        let analysers = {};
+        let isAdmin = false;
+        let db = null;
+
+        // Initialize IndexedDB for unlimited storage
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('NeuralStringsDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('tracks')) {
+                        database.createObjectStore('tracks', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        // Load tracks from IndexedDB
+        async function loadTracks() {
+            if (!db) await initDB();
+            
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['tracks'], 'readonly');
+                const store = transaction.objectStore('tracks');
+                const request = store.getAll();
+                
+                request.onsuccess = () => {
+                    tracks = request.result || [];
+                    resolve(tracks);
+                };
+                
+                request.onerror = () => resolve([]);
+            });
+        }
+
+        // Save track to IndexedDB
+        async function saveTrackToDB(track) {
+            if (!db) await initDB();
+            
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['tracks'], 'readwrite');
+                const store = transaction.objectStore('tracks');
+                const request = store.put(track);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Delete track from IndexedDB
+        async function deleteTrackFromDB(trackId) {
+            if (!db) await initDB();
+            
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['tracks'], 'readwrite');
+                const store = transaction.objectStore('tracks');
+                store.delete(trackId);
+                transaction.oncomplete = () => resolve();
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                await loadTracks();
+                renderTracks();
+                updateStats();
+            } catch (e) {
+                console.error('DB init failed:', e);
+                // Fallback to memory only
+                tracks = [];
+            }
+            
+            document.getElementById('shareLink').value = window.location.href;
+            document.addEventListener('click', initAudioContext, { once: true });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+                    e.preventDefault();
+                    if (currentTrackId) togglePlay(currentTrackId);
+                }
+            });
+            
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.closest('.track-card') || e.target.closest('.inline-player')) {
+                    e.preventDefault();
+                    showNotification('Downloads disabled - Stream only', 'info');
+                }
+            });
+        });
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Admin Lock Functions
+        function checkAdmin() {
+            const input = document.getElementById('adminPassword');
+            const error = document.getElementById('lockError');
+            
+            if (input.value === ADMIN_PASSWORD) {
+                unlockAdmin();
+                showNotification('Admin access granted', 'success');
+            } else {
+                error.classList.remove('hidden');
+                input.value = '';
+                setTimeout(() => error.classList.add('hidden'), 3000);
+            }
+        }
+
+        function unlockAdmin() {
+            isAdmin = true;
+            document.getElementById('adminLock').classList.add('hidden');
+            document.getElementById('uploadSection').classList.remove('hidden');
+            document.getElementById('visitorNotice').classList.add('hidden');
+            document.getElementById('adminBtn').classList.remove('hidden');
+            document.getElementById('emptyState').innerHTML = `
+                <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center border border-gray-700">
+                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-500 text-lg">Ready for upload</p>
+                <p class="text-gray-600 text-sm mt-2">Drop individual audio files above</p>
+            `;
+            setupUpload();
+            checkStorage();
+        }
+
+        function lockAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLock').classList.remove('hidden');
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('visitorNotice').classList.remove('hidden');
+            document.getElementById('adminBtn').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('emptyState').innerHTML = `
+                <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center border border-gray-700">
+                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-500 text-lg">No transmissions detected</p>
+                <p class="text-gray-600 text-sm mt-2">Admin access required to upload recordings</p>
+            `;
+        }
+
+        function checkStorage() {
+            // Check if we're approaching storage limits
+            const totalSize = tracks.reduce((acc, t) => acc + (t.fileSize || 0), 0);
+            const maxSize = 50 * 1024 * 1024; // 50MB warning threshold
+            
+            if (totalSize > maxSize) {
+                document.getElementById('storageWarning').classList.remove('hidden');
+            }
+        }
+
+        // Upload Handling - INDIVIDUAL FILES ONLY
+        function setupUpload() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+            
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                
+                const items = e.dataTransfer.items;
+                const files = [];
+                
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    if (item.kind === 'file') {
+                        const entry = item.webkitGetAsEntry();
+                        if (entry && entry.isFile) {
+                            files.push(item.getAsFile());
+                        } else if (entry && entry.isDirectory) {
+                            showNotification('Folders not allowed - upload individual files only', 'error');
+                            return;
+                        }
+                    }
+                }
+                
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+                fileInput.value = '';
+            });
+        }
+
+        async function processFiles(files) {
+            if (!isAdmin) {
+                showNotification('Admin access required', 'error');
+                return;
+            }
+            
+            document.getElementById('loadMoreIndicator').classList.remove('hidden');
+            
+            for (const file of files) {
+                const isOpus = file.name.toLowerCase().endsWith('.opus') || 
+                               file.type === 'audio/opus' || 
+                               file.type === 'audio/ogg; codecs=opus';
+                const isAudio = file.type.startsWith('audio/') || isOpus;
+                
+                if (!isAudio) continue;
+                
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const base64 = arrayBufferToBase64(arrayBuffer);
+                    
+                    const track = {
+                        id: Date.now() + Math.random(),
+                        name: file.name.replace(/\.[^/.]+$/, ""),
+                        src: 'data:' + file.type + ';base64,' + base64,
+                        duration: 0,
+                        date: new Date().toISOString(),
+                        plays: 0,
+                        codec: isOpus ? 'OPUS' : (file.type.includes('ogg') ? 'OGG' : file.type.split('/')[1].toUpperCase()),
+                        isOpus: isOpus,
+                        fileSize: file.size
+                    };
+                    
+                    // Get duration
+                    await new Promise((resolve) => {
+                        const tempAudio = new Audio(track.src);
+                        tempAudio.addEventListener('loadedmetadata', () => {
+                            track.duration = tempAudio.duration;
+                            resolve();
+                        });
+                        tempAudio.addEventListener('error', () => {
+                            track.duration = 180;
+                            resolve();
+                        });
+                        setTimeout(() => resolve(), 5000); // Timeout fallback
+                    });
+                    
+                    // Save to IndexedDB
+                    await saveTrackToDB(track);
+                    tracks.unshift(track);
+                    
+                    showNotification(`Uploaded: ${track.name}`, 'success');
+                    
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    showNotification(`Failed to upload ${file.name}`, 'error');
+                }
+            }
+            
+            document.getElementById('loadMoreIndicator').classList.add('hidden');
+            renderTracks();
+            updateStats();
+            checkStorage();
+        }
+
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+        async function clearAllTracks() {
+            if (!isAdmin) {
+                showNotification('Admin access required', 'error');
+                return;
+            }
+            
+            if (!confirm(`Delete all ${tracks.length} tracks? This cannot be undone.`)) return;
+            
+            // Stop all playback
+            Object.values(audioPlayers).forEach(audio => {
+                audio.pause();
+                audio.src = '';
+            });
+            
+            // Clear from IndexedDB
+            if (db) {
+                const transaction = db.transaction(['tracks'], 'readwrite');
+                const store = transaction.objectStore('tracks');
+                await store.clear();
+            }
+            
+            tracks = [];
+            audioPlayers = {};
+            playingStates = {};
+            analysers = {};
+            currentTrack = null;
+            currentTrackId = null;
+            
+            renderTracks();
+            updateStats();
+            document.getElementById('storageWarning').classList.add('hidden');
+            showNotification('Archive cleared', 'info');
+        }
+
+        function exportTracks() {
+            const dataStr = JSON.stringify(tracks, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'neural-strings-backup.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Tracks exported', 'success');
+        }
+
+        // Audio Player Functions
+        function createAudioElement(track) {
+            if (audioPlayers[track.id]) return audioPlayers[track.id];
+            
+            const audio = new Audio(track.src);
+            audio.preload = 'metadata';
+            
+            if (audioContext && !analysers[track.id]) {
+                try {
+                    const source = audioContext.createMediaElementSource(audio);
+                    const analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                    analysers[track.id] = analyser;
+                } catch (e) {
+                    console.log('Audio context already connected');
+                }
+            }
+            
+            audio.addEventListener('timeupdate', () => updateTrackProgress(track.id));
+            audio.addEventListener('ended', () => onTrackEnded(track.id));
+            audio.addEventListener('play', () => {
+                playingStates[track.id] = true;
+                updateTrackUI(track.id);
+                startVisualizer(track.id);
+            });
+            audio.addEventListener('pause', () => {
+                playingStates[track.id] = false;
+                updateTrackUI(track.id);
+            });
+            
+            audioPlayers[track.id] = audio;
+            return audio;
+        }
+
+        function updateTrackProgress(trackId) {
+            const audio = audioPlayers[trackId];
+            if (!audio) return;
+            
+            const progress = (audio.currentTime / audio.duration) * 100;
+            const progressFill = document.getElementById(`progress-${trackId}`);
+            const timeDisplay = document.getElementById(`time-${trackId}`);
+            
+            if (progressFill) progressFill.style.width = `${progress}%`;
+            if (timeDisplay) timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+        }
+
+        function onTrackEnded(trackId) {
+            playingStates[trackId] = false;
+            updateTrackUI(trackId);
+            
+            const progressFill = document.getElementById(`progress-${trackId}`);
+            if (progressFill) progressFill.style.width = '0%';
+        }
+
+        function updateTrackUI(trackId) {
+            const isPlaying = playingStates[trackId];
+            const playBtn = document.getElementById(`play-btn-${trackId}`);
+            const card = document.getElementById(`card-${trackId}`);
+            const visualizer = document.getElementById(`viz-${trackId}`);
+            
+            if (playBtn) {
+                playBtn.innerHTML = isPlaying ? 
+                    `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg><span>PAUSE</span>` :
+                    `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>PLAY</span>`;
+                
+                if (isPlaying) {
+                    playBtn.classList.add('play-btn-pulse');
+                    card?.classList.add('active');
+                    visualizer?.classList.remove('hidden');
+                } else {
+                    playBtn.classList.remove('play-btn-pulse');
+                    card?.classList.remove('active');
+                    visualizer?.classList.add('hidden');
+                }
+            }
+        }
+
+        function startVisualizer(trackId) {
+            const canvas = document.getElementById(`canvas-${trackId}`);
+            const analyser = analysers[trackId];
+            if (!canvas || !analyser || !playingStates[trackId]) return;
+            
+            const ctx = canvas.getContext('2d');
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function draw() {
+                if (!playingStates[trackId]) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                
+                requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    barHeight = (dataArray[i] / 255) * canvas.height;
+                    
+                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - barHeight);
+                    gradient.addColorStop(0, '#00f3ff');
+                    gradient.addColorStop(1, '#ff00ff');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 1;
+                }
+            }
+            
+            draw();
+        }
+
+        function togglePlay(trackId) {
+            Object.keys(audioPlayers).forEach(id => {
+                if (id != trackId && playingStates[id]) {
+                    audioPlayers[id].pause();
+                    playingStates[id] = false;
+                    updateTrackUI(id);
+                }
+            });
+            
+            const audio = audioPlayers[trackId] || createAudioElement(tracks.find(t => t.id == trackId));
+            
+            if (playingStates[trackId]) {
+                audio.pause();
+            } else {
+                currentTrackId = trackId;
+                currentTrack = tracks.find(t => t.id == trackId);
+                
+                if (currentTrack) {
+                    currentTrack.plays++;
+                    // Update plays in DB
+                    saveTrackToDB(currentTrack);
+                    updateStats();
+                    document.getElementById(`plays-${trackId}`).textContent = `${currentTrack.plays} plays`;
+                }
+                
+                audio.play().catch(e => {
+                    showNotification('Click to enable audio playback', 'info');
+                    initAudioContext();
+                });
+            }
+        }
+
+        function seekTrack(trackId, percent) {
+            const audio = audioPlayers[trackId];
+            if (!audio || !audio.duration) return;
+            
+            audio.currentTime = (percent / 100) * audio.duration;
+        }
+
+        // Rendering
+        function renderTracks() {
+            const container = document.getElementById('tracksContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (tracks.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyState);
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.className = container.className;
+            
+            tempDiv.innerHTML = tracks.map((track, index) => {
+                if (!audioPlayers[track.id] && index < 10) {
+                    setTimeout(() => createAudioElement(track), index * 100);
+                }
+                
+                return `
+                <div id="card-${track.id}" class="track-card glass rounded-2xl p-6 border border-white/10 relative group" data-id="${track.id}">
+                    <div class="protected-overlay" onmousedown="return false;" oncontextmenu="return false;"></div>
+                    
+                    <div class="flex items-start justify-between mb-4 relative z-20">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400/20 to-purple-600/20 flex items-center justify-center border border-cyan-500/30 relative">
+                            <span class="font-orbitron font-bold text-cyan-400 text-lg">${String(index + 1).padStart(2, '0')}</span>
+                            ${track.isOpus ? '<div class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-gray-900 animate-pulse" title="OPUS Format"></div>' : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="plays-${track.id}" class="text-xs text-gray-500 font-mono">${track.plays} plays</span>
+                            ${track.codec ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${track.isOpus ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-gray-700 text-gray-400'}">${track.codec}</span>` : ''}
+                            ${isAdmin ? `<button onclick="event.stopPropagation(); deleteTrack(${track.id})" class="text-gray-600 hover:text-red-400 transition-colors relative z-30">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>` : ''}
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-bold text-white text-lg mb-1 truncate relative z-20" title="${track.name}">${track.name}</h4>
+                    <p class="text-gray-500 text-sm mb-4 relative z-20">${new Date(track.date).toLocaleDateString()} • ${formatTime(track.duration)}</p>
+                    
+                    <div class="inline-player relative z-20">
+                        <div id="viz-${track.id}" class="mb-3 hidden">
+                            <canvas id="canvas-${track.id}" class="visualizer-canvas" width="300" height="60"></canvas>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 mb-3">
+                            <button id="play-btn-${track.id}" onclick="event.stopPropagation(); togglePlay(${track.id})" 
+                                class="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white hover:scale-105 transition-transform glow-border">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            
+                            <div class="flex-1">
+                                <div class="progress-container" onclick="event.stopPropagation(); const rect = this.getBoundingClientRect(); const percent = ((event.clientX - rect.left) / rect.width) * 100; seekTrack(${track.id}, percent);">
+                                    <div id="progress-${track.id}" class="progress-fill" style="width: 0%"></div>
+                                    <div id="handle-${track.id}" class="progress-handle" style="left: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <span id="time-${track.id}" class="time-display">00:00 / ${formatTime(track.duration)}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 px-2">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                            </svg>
+                            <input type="range" min="0" max="100" value="80" class="flex-1 h-1" 
+                                oninput="event.stopPropagation(); const audio = audioPlayers[${track.id}]; if(audio) audio.volume = this.value / 100;"
+                                onclick="event.stopPropagation()">
+                        </div>
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </div>
+            `}).join('');
+            
+            container.innerHTML = tempDiv.innerHTML;
+        }
+
+        async function deleteTrack(id) {
+            if (!isAdmin) {
+                showNotification('Admin access required', 'error');
+                return;
+            }
+            
+            if (!confirm('Delete this recording from the archive?')) return;
+            
+            if (audioPlayers[id]) {
+                audioPlayers[id].pause();
+                audioPlayers[id].src = '';
+                delete audioPlayers[id];
+            }
+            delete playingStates[id];
+            delete analysers[id];
+            
+            await deleteTrackFromDB(id);
+            tracks = tracks.filter(t => t.id !== id);
+            
+            if (currentTrackId == id) {
+                currentTrackId = null;
+                currentTrack = null;
+            }
+            
+            renderTracks();
+            updateStats();
+            showNotification('Track deleted', 'info');
+        }
+
+        function updateStats() {
+            document.getElementById('trackCount').textContent = tracks.length;
+            document.getElementById('collectionCount').textContent = `(${tracks.length} tracks)`;
+            
+            const totalSeconds = tracks.reduce((acc, t) => acc + (t.duration || 0), 0);
+            const minutes = Math.floor(totalSeconds / 60);
+            const hours = Math.floor(minutes / 60);
+            document.getElementById('totalDuration').textContent = 
+                hours > 0 ? `${String(hours).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}` : `${String(minutes).padStart(2, '0')}:00`;
+            
+            const totalPlays = tracks.reduce((acc, t) => acc + (t.plays || 0), 0);
+            document.getElementById('playCount').textContent = totalPlays;
+        }
+
+        function formatTime(seconds) {
+            if (!seconds) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // View Toggle
+        function setView(view) {
+            const container = document.getElementById('tracksContainer');
+            const gridBtn = document.getElementById('gridBtn');
+            const listBtn = document.getElementById('listBtn');
+            
+            if (view === 'grid') {
+                container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+                gridBtn.className = 'p-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+                listBtn.className = 'p-2 rounded-lg bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10';
+            } else {
+                container.className = 'flex flex-col gap-4';
+                listBtn.className = 'p-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+                gridBtn.className = 'p-2 rounded-lg bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10';
+            }
+        }
+
+        // Share Modal
+        function openShareModal() {
+            document.getElementById('shareModal').classList.add('active');
+            document.getElementById('shareLink').value = window.location.href;
+        }
+
+        function closeShareModal(e) {
+            if (!e || e.target === document.getElementById('shareModal')) {
+                document.getElementById('shareModal').classList.remove('active');
+            }
+        }
+
+        function copyLink() {
+            const input = document.getElementById('shareLink');
+            input.select();
+            document.execCommand('copy');
+            showNotification('Link copied to clipboard!', 'success');
+        }
+
+        function shareTo(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent(`Check out my ${tracks.length} guitar recordings on Neural Strings 🎸`);
+            
+            switch(platform) {
+                case 'twitter':
+                    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+                    break;
+                case 'instagram':
+                    copyLink();
+                    showNotification('Link copied! Paste in your Instagram bio', 'info');
+                    break;
+                case 'copy':
+                    copyLink();
+                    break;
+            }
+        }
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            const notif = document.createElement('div');
+            const colors = type === 'success' ? 'from-cyan-500 to-purple-600' : 
+                          type === 'error' ? 'from-red-500 to-pink-600' : 'from-gray-600 to-gray-800';
+            
+            notif.className = `fixed top-24 right-6 z-50 px-6 py-3 rounded-xl bg-gradient-to-r ${colors} text-white font-bold shadow-2xl transform translate-x-full transition-transform duration-300 border border-white/20`;
+            notif.textContent = message;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.classList.remove('translate-x-full'), 100);
+            setTimeout(() => {
+                notif.classList.add('translate-x-full');
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
